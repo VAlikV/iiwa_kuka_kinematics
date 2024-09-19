@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # f = open("joints.txt", "r")
-data = np.genfromtxt("joints.txt", delimiter="  ", dtype=float)
+data = np.genfromtxt("build/joints.txt", delimiter="\t", dtype=float)
 
 data = np.insert(data,0,[0,0,0],axis=1)
 

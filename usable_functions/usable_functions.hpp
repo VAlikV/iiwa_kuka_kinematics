@@ -3,6 +3,6 @@
 
 #include "../kinematic_class/kinematic.hpp"
 
-void saveMat(std::string name, mat matrix);
+void saveMat(std::string name, iiwa_kunematic::mat matrix);
 
 #endif
