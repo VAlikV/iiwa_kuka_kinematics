@@ -4,39 +4,57 @@
 #include <iostream>
 #include <armadillo>
 #include <math.h>
+#include <string>
 
-using namespace arma;
-
-class Kinematic
+namespace iiwa_kunematic
 {
-private:
-    // ДХ параметры 
-    const float alpha_[7] = {-datum::pi/2, datum::pi/2, datum::pi/2, -datum::pi/2, -datum::pi/2, datum::pi/2, 0};
-    const float d_[7] = {340, 0, 400, 0, 400, 0, 126};
-    const float a_[7] = {0, 0, 0, 0, 0, 0, 0};
-    vec thetta_;    // Обобщенные координаты - углы в джоинтах 
-    
-    const float thetta_limits_[7] = {165, 115, 165, 115, 165, 115};     // Пределы углов в джоинтах
+    using namespace arma;
 
+    const int N_JOINTS = 7;
 
+    class Kinematic
+    {
+    private:
+        // ДХ параметры 
+        const float alpha_[N_JOINTS] = {-datum::pi/2, datum::pi/2, datum::pi/2, -datum::pi/2, -datum::pi/2, datum::pi/2, 0};
+        const float d_[N_JOINTS] = {340, 0, 400, 0, 400, 0, 126};
+        const float a_[N_JOINTS] = {0, 0, 0, 0, 0, 0, 0};
+        vec thetta_;    // Обобщенные координаты - углы в джоинтах 
+        
+        const float thetta_limits_[N_JOINTS] = {165, 115, 165, 115, 165, 115};     // Пределы углов в джоинтах
 
-public:
-    Kinematic();
+        vec endefector_coordinate_;
+        vec endefector_pose_;
 
-    // ---------------------------------------------------------------- Вспомогательное
+        mat joints_coordinate_;
 
-    void printDH();
-    vec deg2rad(vec degrees);
-    vec rad2deg(vec rads);
+    public:
 
-    // ---------------------------------------------------------------- Сетеры/гетеры
+        Kinematic();
 
-    void setThetta(vec thetta = zeros(7));
+        // ---------------------------------------------------------------- Вспомогательное
 
-    // ---------------------------------------------------------------- Прямая кинематика
+        void printDH();
+        vec deg2rad(vec degrees);
+        vec rad2deg(vec rads);
 
-    mat T(float const alpha = 0, float const d = 0, float const a = 0, float const thetta = 0);
+        // ---------------------------------------------------------------- Сетеры/гетеры
 
-};
+        void setThettaDeg(vec thetta = zeros(N_JOINTS)); // В градусах
+        void setThettaRad(vec thetta = zeros(N_JOINTS)); // В радианах
+
+        mat getJointsCoordinates();
+
+        vec getEndefectorCoordinates();
+
+        // ---------------------------------------------------------------- Прямая кинематика
+
+        mat T(float const alpha = 0, float const d = 0, float const a = 0, float const thetta = 0);
+        mat R(float const alpha = 0, float const thetta = 0);
+
+        void FK();
+
+    };
+}
 
 #endif
