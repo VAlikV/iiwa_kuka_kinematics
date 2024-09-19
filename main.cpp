@@ -1,6 +1,6 @@
 #include "kinematic_class/kinematic.hpp"
+#include "usable_functions/usable_functions.hpp"
 
-using namespace std;
 using namespace iiwa_kunematic;
 
 int main(int argc, char** argv)
@@ -11,6 +11,8 @@ int main(int argc, char** argv)
     iiwa.setThettaDeg({0, 0, 0, 0, 0, 0, 0});
     iiwa.FK();
     mat coord = iiwa.getJointsCoordinates();
-    coord.print();
+
+    saveMat("joints.txt", coord);
+
     return 0;
 }

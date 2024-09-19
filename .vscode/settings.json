@@ -1,6 +1,10 @@
 {
     "ros.distro": "noetic",
     "files.associations": {
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "string": "cpp",
+        "fstream": "cpp",
+        "ostream": "cpp",
+        "iosfwd": "cpp"
     }
 }
