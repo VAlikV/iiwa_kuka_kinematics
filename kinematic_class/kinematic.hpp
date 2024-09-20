@@ -28,6 +28,11 @@ namespace iiwa_kunematic
 
         mat joints_coordinate_;
 
+        // ---------------------------------------------------------------- Обратная кинематика
+        
+        vec z_i_1(int joint);
+        vec p_i_1(int joint);
+
     public:
 
         Kinematic();
@@ -54,6 +59,11 @@ namespace iiwa_kunematic
 
         void FK();
 
+        // ---------------------------------------------------------------- Обратная кинематика
+
+        vec eulerZYZ(const mat& rot_mat);
+        mat Jacobian();
+        void IK(const vec target_pos);
     };
 }
 

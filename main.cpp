@@ -11,8 +11,20 @@ int main(int argc, char** argv)
     // iiwa.setThettaDeg({0, 0, 0, 0, 0, 0, 0});
     iiwa.FK();
     mat coord = iiwa.getJointsCoordinates();
+    
+    vec ik_data = iiwa.getEndefectorCoordinates();
+    vec zero = {0,0,0};
+    ik_data = join_cols(ik_data, zero);
+
+    iiwa.setThettaDeg({0, 0, 0, 0, 0, 0, 0});
 
     saveMat("joints.txt", coord);
+
+    iiwa.IK(ik_data);
+    
+    mat coord1 = iiwa.getJointsCoordinates();
+
+    saveMat("joints1.txt", coord1);
 
     return 0;
 }

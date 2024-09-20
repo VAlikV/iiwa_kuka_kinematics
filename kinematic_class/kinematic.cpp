@@ -88,3 +88,65 @@ void Kinematic::FK()
         Добавить ориентацию эндефектора
     */
 }
+
+// ---------------------------------------------------------------- Обратная кинематика
+
+vec Kinematic::eulerZYZ(const mat& rot_mat)
+{
+    return vec({0});
+}
+
+vec Kinematic::z_i_1(int joint)
+{
+    mat z_i(3,3,fill::eye);
+
+    for(int i = 0; i < joint; ++i)
+    {
+        z_i *= this->R(alpha_[i],thetta_[i]);
+    }
+
+    return {z_i(0,2), z_i(1,2), z_i(2,2)};
+}
+
+vec Kinematic::p_i_1(int joint)
+{
+    mat p_i(4,4,fill::eye);
+
+    for(int i = 0; i < joint; ++i)
+    {
+        p_i *= this->T(alpha_[i], d_[i], a_[i], thetta_[i]);
+    }
+
+    return {p_i(0,3), p_i(1,3), p_i(2,3)};
+}
+
+mat Kinematic::Jacobian()
+{
+    mat J(6,N_JOINTS);
+    this->FK();
+    vec z_i;
+    vec p_i;
+
+    for(int i = 0; i < N_JOINTS; ++i)
+    {
+        z_i = this->z_i_1(i);
+        p_i = cross(z_i, endefector_coordinate_ - this->p_i_1(i));
+        J.col(i) = join_cols(p_i,z_i);
+    }
+    return J;
+}
+
+void Kinematic::IK(const vec target_pos)
+{
+    mat J(6,N_JOINTS);
+    vec end_coord(3);
+    vec zero = {0,0,0};
+
+    for(int i = 0; i < 100; ++i)
+    {
+        J = Jacobian();
+        end_coord = this->getEndefectorCoordinates();
+        end_coord = join_cols(end_coord, zero);
+        thetta_ = thetta_ + pinv(J) * (target_pos - end_coord);
+    }
+}
