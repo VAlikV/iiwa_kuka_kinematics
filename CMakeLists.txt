@@ -33,3 +33,5 @@ target_link_libraries(${PROJECT}
 )
 
 target_include_directories(${PROJECT} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_subdirectory(for_tests)

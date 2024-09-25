@@ -17,7 +17,7 @@ namespace iiwa_kunematic
     private:
         // ДХ параметры 
         const float alpha_[N_JOINTS] = {-datum::pi/2, datum::pi/2, datum::pi/2, -datum::pi/2, -datum::pi/2, datum::pi/2, 0};
-        const float d_[N_JOINTS] = {340, 0, 400, 0, 400, 0, 126};
+        const float d_[N_JOINTS] = {0.34, 0, 0.4, 0, 0.4, 0, 0.126};
         const float a_[N_JOINTS] = {0, 0, 0, 0, 0, 0, 0};
         vec thetta_;    // Обобщенные координаты - углы в джоинтах 
         
@@ -28,6 +28,10 @@ namespace iiwa_kunematic
 
         mat joints_coordinate_;
 
+        // ---------------------------------------------------------------- Вспомогательное
+
+        bool compareVectors(vec a, vec b);
+        
         // ---------------------------------------------------------------- Обратная кинематика
         
         vec z_i_1(int joint);
@@ -51,17 +55,23 @@ namespace iiwa_kunematic
         mat getJointsCoordinates();
 
         vec getEndefectorCoordinates();
+        vec getEndefectorOrientation();
 
         // ---------------------------------------------------------------- Прямая кинематика
 
         mat T(float const alpha = 0, float const d = 0, float const a = 0, float const thetta = 0);
         mat R(float const alpha = 0, float const thetta = 0);
 
+        mat Rx(float const thetta);
+        mat Ry(float const thetta);
+        mat Rz(float const thetta);
+
+
         void FK();
 
         // ---------------------------------------------------------------- Обратная кинематика
 
-        vec eulerZYZ(const mat& rot_mat);
+        void eulerZYZ(const mat& rot_mat);
         mat Jacobian();
         void IK(const vec target_pos);
     };

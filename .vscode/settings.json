@@ -5,6 +5,11 @@
         "string": "cpp",
         "fstream": "cpp",
         "ostream": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "memory": "cpp",
+        "future": "cpp",
+        "istream": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp"
     }
 }

@@ -19,9 +19,9 @@ fig = plt.figure()
 ax = plt.axes(projection='3d')
 plt.axis('equal')
 
-ax.set_xlim3d([-1000, 1000])
-ax.set_ylim3d([-1000, 1000])
-ax.set_zlim3d([0, 1300])
+ax.set_xlim3d([-1, 1])
+ax.set_ylim3d([-1, 1])
+ax.set_zlim3d([0, 1.3])
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 
