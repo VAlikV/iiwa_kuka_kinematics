@@ -10,6 +10,13 @@ Kinematic::Kinematic()
 
     joints_coordinate_ = zeros(3,7);
 
+    z_i_ = zeros(3,7);
+    z_i_(2,0) = 1;
+
+    p_i_ = zeros(3,7);
+
+    
+
     this->FK();
 }
 
@@ -118,90 +125,65 @@ void Kinematic::FK()
 
     for(int i = 0; i < N_JOINTS; ++i)
     {
+        if (i > 0)
+        {
+            z_i_.col(i) = {temp(0,2), temp(1,2), temp(2,2)};
+            p_i_.col(i) = {temp(0,3), temp(1,3), temp(2,3)};
+        }
+
         temp *= this->T(alpha_[i], d_[i], a_[i], thetta_[i]);
         joints_coordinate_.col(i) = {temp(0,3), temp(1,3), temp(2,3)};
-        // temp.print(std::to_string(i));
     }
 
     endefector_coordinate_ = joints_coordinate_.col(N_JOINTS-1);
 
-    this->eulerZYZ(temp);
+    endefector_pose_ = {temp(0,2), temp(1,2), temp(2,2)};
+
+    // this->eulerZYZ(temp);
 }
 
 // ---------------------------------------------------------------- Обратная кинематика
 
-void Kinematic::eulerZYZ(const mat& rot_mat)
+vec Kinematic::eulerZYZ(const mat& rot_mat)
 {
     vec angles(3);
 
-    angles(0) = (rot_mat(0,2));
-    angles(1) = (rot_mat(1,2));
-    angles(2) = (rot_mat(2,2));
-
-    // mat E(3,3,fill::eye);
     // angles(0) = atan2(rot_mat(1,2), rot_mat(0,2));
     // angles(1) = atan2(sqrt(1-rot_mat(2,2)*rot_mat(2,2)), rot_mat(2,2));
     // angles(2) = atan2(rot_mat(2,1), -rot_mat(2,0));
 
-    // double c = rot_mat(2,2);
-    // if (c > -1 && c < 1) {
-    //     double s = sqrt(1-c*c);
-    //     angles(0) = atan2(rot_mat(1,2),rot_mat(0,2)); 
-    //     angles(1) = atan2(c,s);
-    //     angles(2) = atan2(rot_mat(2,1),-rot_mat(2,0));   
-    // }   
-    // else if(c == 1) {
-    //     angles(0) = atan2(rot_mat(1,0),rot_mat(0,0));   // theta + psy
-    //     angles(1) = 0;
-    //     angles(2) = 0; }
-    // else {
-    //     angles(0) = atan2(-rot_mat(0,1),-rot_mat(0,0)); // theta-psy
-    //     angles(1) = datum::pi;
-    //     angles(2) = 0;
-    // }
+    double c = rot_mat(2,2);
+    if (c > -1 && c < 1) {
+        double s = sqrt(1-c*c);
+        angles(0) = atan2(rot_mat(1,2),rot_mat(0,2)); 
+        angles(1) = atan2(c,s);
+        angles(2) = atan2(rot_mat(2,1),-rot_mat(2,0));   
+    }   
+    else if(c == 1) {
+        angles(0) = atan2(rot_mat(1,0),rot_mat(0,0));   // theta + psy
+        angles(1) = 0;
+        angles(2) = 0; }
+    else {
+        angles(0) = atan2(-rot_mat(0,1),-rot_mat(0,0)); // theta-psy
+        angles(1) = datum::pi;
+        angles(2) = 0;
+    }
 
-    endefector_pose_ = angles;
+    return angles;
     // endefector_pose_ = vec({0, 0, angles(0)}) + this->Rz(angles(0))*vec({0, angles(1), 0}) + this->Rz(angles(0))*this->Ry(angles(1))*vec({0, 0, angles(2)});
     // endefector_pose_ = {(rot_mat(0,2)), rot_mat(1,2), rot_mat(0,1)};
-}
-
-vec Kinematic::z_i_1(int joint)
-{
-    mat z_i(3,3,fill::eye);
-
-    for(int i = 0; i < joint; ++i)
-    {
-        z_i *= this->R(alpha_[i],thetta_[i]);
-    }
-
-    return {z_i(0,2), z_i(1,2), z_i(2,2)};
-}
-
-vec Kinematic::p_i_1(int joint)
-{
-    mat p_i(4,4,fill::eye);
-
-    for(int i = 0; i < joint; ++i)
-    {
-        p_i *= this->T(alpha_[i], d_[i], a_[i], thetta_[i]);
-    }
-
-    return {p_i(0,3), p_i(1,3), p_i(2,3)};
 }
 
 mat Kinematic::Jacobian()
 {
     this->FK();
     mat J(6,N_JOINTS);
-    vec z_i;
-    vec p_i;
+    vec p_i_1;
 
     for(int i = 0; i < N_JOINTS; ++i)
     {
-        z_i = this->z_i_1(i);
-        p_i = cross(z_i, endefector_coordinate_ - this->p_i_1(i));
-        J.col(i) = join_cols(p_i,z_i);
-        // J.col(i) = join_cols(z_i,p_i);
+        p_i_1 = cross(z_i_.col(i), endefector_coordinate_ - p_i_.col(i));
+        J.col(i) = join_cols(p_i_1,z_i_.col(i));
     }
     return J;
 }
@@ -209,7 +191,7 @@ mat Kinematic::Jacobian()
 void Kinematic::IK(const vec target_pos)
 {
     mat J(6,N_JOINTS);
-    vec end_coord(3);
+    vec end_coord(6);
     vec zero = {0,0,0};
 
     for(int i = 0; i < 1000000; ++i)
