@@ -15,7 +15,7 @@ Kinematic::Kinematic()
 
     p_i_ = zeros(3,7);
 
-    
+
 
     this->FK();
 }
@@ -137,9 +137,13 @@ void Kinematic::FK()
 
     endefector_coordinate_ = joints_coordinate_.col(N_JOINTS-1);
 
-    endefector_pose_ = {temp(0,2), temp(1,2), temp(2,2)};
+    // endefector_coordinate_ = {0.23, 0.10, 0.32};
 
-    // this->eulerZYZ(temp);
+    // endefector_pose_ = {temp(0,2), temp(1,2), temp(2,2)};
+    
+    // endefector_pose_ = {0, 0, 0};
+
+    endefector_pose_ = this->eulerZYZ(temp);
 }
 
 // ---------------------------------------------------------------- Обратная кинематика
@@ -169,9 +173,9 @@ vec Kinematic::eulerZYZ(const mat& rot_mat)
         angles(2) = 0;
     }
 
-    return angles;
-    // endefector_pose_ = vec({0, 0, angles(0)}) + this->Rz(angles(0))*vec({0, angles(1), 0}) + this->Rz(angles(0))*this->Ry(angles(1))*vec({0, 0, angles(2)});
-    // endefector_pose_ = {(rot_mat(0,2)), rot_mat(1,2), rot_mat(0,1)};
+    // return angles;
+    // return vec({0, 0, angles(0)}) + this->Rz(angles(0))*vec({0, angles(1), 0}) + this->Rz(angles(0))*this->Ry(angles(1))*vec({0, 0, angles(2)});
+    return {rot_mat(0,2), rot_mat(1,2), rot_mat(2,2)};
 }
 
 mat Kinematic::Jacobian()
@@ -194,7 +198,7 @@ void Kinematic::IK(const vec target_pos)
     vec end_coord(6);
     vec zero = {0,0,0};
 
-    for(int i = 0; i < 1000000; ++i)
+    for(int i = 0; i < 10000; ++i)
     {
         J = Jacobian();
         end_coord = join_cols(endefector_coordinate_, endefector_pose_);
@@ -203,6 +207,48 @@ void Kinematic::IK(const vec target_pos)
             std::cout << "Itera: " << i << std::endl;
             break;
         }
-        thetta_ = thetta_ + pinv(J) * (target_pos - end_coord);
+        thetta_ = thetta_ + pinv(J) * (pow(target_pos - end_coord, 3))*0.5;
+        saveVec("hui.txt", vec(end_coord));
     }
+}
+
+void saveMat(std::string name, mat matrix)
+{
+    std::ofstream ofs;
+    ofs.open(name, std::ofstream::out | std::ofstream::trunc);
+
+    if (!ofs.is_open()) { 
+        std::cout << "ERROR" << std::endl;
+        return;
+    } 
+  
+    for (int i = 0; i < matrix.n_rows; ++i)
+    {
+        for (int j = 0; j < matrix.n_cols; ++j)
+        {
+            ofs << matrix(i,j) << "\t";
+        } 
+        ofs << "\n";
+    } 
+  
+    ofs.close(); 
+}
+
+void saveVec(std::string name, vec vector)
+{
+    std::ofstream ofs;
+    ofs.open(name, std::ofstream::out | std::ios_base::app);
+
+    if (!ofs.is_open()) { 
+        std::cout << "ERROR" << std::endl;
+        return;
+    } 
+
+    for (int i = 0; i < size(vector)(0); ++i)
+    {
+        ofs << vector(i) << "\t";
+    } 
+    ofs << "\n";
+  
+    ofs.close(); 
 }

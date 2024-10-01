@@ -1,5 +1,5 @@
 #include "kinematic_class/kinematic.hpp"
-#include "usable_functions/usable_functions.hpp"
+// #include "usable_functions/usable_functions.hpp"
 #include <time.h>
 
 using namespace iiwa_kunematic;
@@ -7,8 +7,12 @@ using namespace iiwa_kunematic;
 int main(int argc, char** argv)
 {
     Kinematic iiwa = Kinematic();
+
+    std::ofstream ofs;
+    ofs.open("hui.txt", std::ofstream::out | std::ofstream::trunc);
+    ofs.close();
     
-    iiwa.setThettaDeg({30, 60, 0, -30, 0, 90, 20});
+    iiwa.setThettaDeg({40, 60, 0, 80, 20, 90, 20});
     // iiwa.setThettaDeg({0, 0, 0, 0, 0, 0, 0});
     iiwa.FK();
     
@@ -21,6 +25,8 @@ int main(int argc, char** argv)
     // vec ik_coor = {250, 467, 250};
     // vec ik_pose = {-0.5, 0.6, -0.62};
     
+    // ik_coor += vec({0.04, 0, 0});
+
     ik_coor.print("1");
     ik_pose.print("1");
 

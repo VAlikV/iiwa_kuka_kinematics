@@ -5,6 +5,7 @@
 #include <armadillo>
 #include <math.h>
 #include <string>
+// #include "../usable_functions/usable_functions.hpp"
 
 namespace iiwa_kunematic
 {
@@ -81,5 +82,9 @@ namespace iiwa_kunematic
         void IK(vec const target_pos);
     };
 }
+
+void saveMat(std::string name, iiwa_kunematic::mat matrix);
+
+void saveVec(std::string name, iiwa_kunematic::vec vector);
 
 #endif
