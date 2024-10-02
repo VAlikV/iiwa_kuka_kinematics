@@ -13,21 +13,20 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 # find_library(Lapack_LIB liblapack NAMES liblapack lapack HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
 # find_library(Armadillo_LIB libarmadillo NAMES libarmadillo armadillo HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
 # find_library(FORTRUN libgfortran.so.5 NAMES libgfortran5 gfortran gfortran5  gfortran REQUIRED)
-# message(${FORTRUN})
-
-# set(KINEMATIC_CLASS ${CMAKE_CURRENT_SOURCE_DIR}/kinematic_class)
-# set(USABLE_FUNCTIONS ${CMAKE_CURRENT_SOURCE_DIR}/usable_functions)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+# find_library(FORTRUN libgfortran.so.5 NAMES libgfortran5 gfortran gfortran5 gfortran REQUIRED)
+# find_library(KDL liborocos-kdl.so.1.5.1 NAMES liborocos-kdl liborocos kdl HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
 
 add_executable(${PROJECT}
     test.cpp
 )
 
-# target_link_libraries(${PROJECT} 
-#     ${OpenBLAS_LIB}
-#     ${Lapack_LIB}
-#     ${Armadillo_LIB}
-#     ${FORTRUN}
-#     Threads::Threads
-# )
-
-# target_include_directories(${PROJECT} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(${PROJECT} 
+    # ${OpenBLAS_LIB}
+    # ${Lapack_LIB}
+    # ${Armadillo_LIB}
+    # ${FORTRUN}
+    Eigen3::Eigen
+    # ${KDL}
+    # Threads::Threads
+)

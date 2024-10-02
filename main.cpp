@@ -1,51 +1,65 @@
-#include "kinematic_class/kinematic.hpp"
-#include "usable_functions/usable_functions.hpp"
+// #include "kinematic_class/kinematic.hpp"
 #include <time.h>
+#include <iostream>
+#include <Eigen/Dense>
+// #include "kinematic_class/KDL/KDL_kinematic.hpp"
+#include "facade/main_kinematic.hpp"
 
-using namespace iiwa_kunematic;
+// using namespace iiwa_kunematic;
 
 int main(int argc, char** argv)
 {
-    Kinematic iiwa = Kinematic();
-    
-    iiwa.setThettaDeg({30, 60, 0, -30, 0, 90, 20});
-    // iiwa.setThettaDeg({0, 0, 0, 0, 0, 0, 0});
-    iiwa.FK();
-    
-    mat coord = iiwa.getJointsCoordinates();
-    saveMat("joints.txt", coord);
+    std::cout << "Hello, I'm kinematics solver!\n\n";
 
-    vec ik_coor = iiwa.getEndefectorCoordinates();
-    vec ik_pose = iiwa.getEndefectorOrientation();
+    KDLKinematic* KDL_solver = new KDLKinematic();
 
-    // vec ik_coor = {250, 467, 250};
-    // vec ik_pose = {-0.5, 0.6, -0.62};
-    
-    ik_coor.print("1");
-    ik_pose.print("1");
+    Kinematic kinematic = Kinematic(KDL_solver);
 
-    ik_coor = join_cols(ik_coor, ik_pose);
-    // vec zero = {0,0,0};
-    // ik_coor = join_cols(ik_coor, zero);
+    Eigen::Array<double,N_JOINTS,3> a = kinematic.getJointPose();
 
-    iiwa.setThettaDeg({10, 10, 10, 10, 10, 10, 10});
-    iiwa.FK();
-    
+    std::cout << a << "\n\n";
+
+
+
+    Eigen::Matrix<double,3,3> rotation;
+
+    rotation << -1, 0, 0,
+                0, 1, 0,
+                0, 0, -1;
+
+    // KDL::Rotation 
+    // rotation = kinematic.getRotationMatrix();
+
+    Eigen::Array<double,3,1> position;
+
+    position << 0.41, 0.41, 0.5; 
+
+    // position = kinematic.getPositionVector();
+
+    // Eigen::Array<double,N_JOINTS,1> Q = kinematic.getQRad();
+    // Q << 1.57, 1.57, 1.57, 1.57, 1.57, 1.57, 1.57; 
+    // kinematic.setQRad(Q);
+    // kinematic.FK();
+
     clock_t t = clock();
-    iiwa.IK(ik_coor);
+    int state = kinematic.IK(rotation, position);
+    kinematic.FK();
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    std::cout << time_taken*1000 << std::endl;
+    std::cout << "Время расчета: " << time_taken*1000 << std::endl;
 
-    ik_coor= iiwa.getEndefectorCoordinates();
-    ik_pose = iiwa.getEndefectorOrientation();
+    Eigen::Array<double,N_JOINTS,1> j = kinematic.getQDeg();
 
-    ik_coor.print("2");
-    ik_pose.print("2");
-    
-    mat coord1 = iiwa.getJointsCoordinates();
+    std::cout << "Углы: " << j << std::endl;
+    std::cout << "Статус: " << state << std::endl;
 
-    saveMat("joints1.txt", coord1);
+    Eigen::Array<double,N_JOINTS,3> b = kinematic.getJointPose();
+
+    std::cout << b << std::endl;
+
+    saveMatrix("joints.txt",a);
+    saveMatrix("joints1.txt",b);
+
 
     return 0;
 }
