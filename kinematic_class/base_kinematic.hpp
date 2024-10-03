@@ -8,10 +8,11 @@
 namespace iiwa_kinematics
 {
     const int N_JOINTS = 7;
-    const double LIMITS_MAX[N_JOINTS] = {170, 120, 170, 120, 170, 120, 175};
-    const double LIMITS_MIN[N_JOINTS] = {-170, -120, -170, -120, -170, -120, -175};
+    const double LIMITS_MAX[N_JOINTS] = {168, 118, 168, 118, 168, 118, 173};
+    const double LIMITS_MIN[N_JOINTS] = {-168, -118, -168, -118, -168, -118, -173};
     const double LINKS[N_JOINTS] = {0.34, 0, 0.4, 0, 0.4, 0, 0.126};
     const int MAX_ITER = 100;
+    const double EPS = 1e-2;
 
     class BaseKinematic
     {

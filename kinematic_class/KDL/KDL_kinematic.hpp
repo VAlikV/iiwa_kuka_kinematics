@@ -12,6 +12,8 @@
 
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainiksolvervel_pinv_givens.hpp>
+#include <kdl/chainiksolvervel_pinv_nso.hpp>
 
 using namespace iiwa_kinematics;
 // using namespace KDL;
@@ -35,8 +37,11 @@ private:
     KDL::Frame endefector_;                         // Положение эндефектора
 
     KDL::ChainIkSolverVel_pinv* vsolver_;            // Решатель дифференциальной задачи кинематики
-    KDL::ChainIkSolverPos_NR_JL* iksolver_;          // Решатель обратной задачи кинематики
+    // KDL::ChainIkSolverVel_pinv_givens* vsolver_;            // Решатель дифференциальной задачи кинематики
+    // KDL::ChainIkSolverVel_pinv_nso* vsolver_;
     
+    KDL::ChainIkSolverPos_NR_JL* iksolver_;          // Решатель обратной задачи кинематики
+    // KDL::ChainIkSolverPos_NR_JL* iksolver_;
 
 public:
     KDLKinematic();

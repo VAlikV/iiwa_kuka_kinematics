@@ -31,9 +31,11 @@ KDLKinematic::KDLKinematic()
     }
 
     fksolver_ = new KDL::ChainFkSolverPos_recursive(chain_);
+    // vsolver_ = new KDL::ChainIkSolverVel_pinv_givens(chain_);
     vsolver_ = new KDL::ChainIkSolverVel_pinv(chain_);
+    // vsolver_ = new KDL::ChainIkSolverVel_pinv_nso(chain_);
 
-    iksolver_ = new KDL::ChainIkSolverPos_NR_JL(chain_, thetta_min_, thetta_max_, *fksolver_, *vsolver_, MAX_ITER);
+    iksolver_ = new KDL::ChainIkSolverPos_NR_JL(chain_, thetta_min_, thetta_max_, *fksolver_, *vsolver_);
     
     joint_pose_ = std::vector<KDL::Frame>(N_JOINTS);
 
@@ -133,6 +135,7 @@ int KDLKinematic::FK()
 int KDLKinematic::IK()
 {
     endefector_previous_ = endefector_;
+    thetta_previous_ = thetta_;
     int kinematics_status = iksolver_->CartToJnt(thetta_previous_, endefector_, thetta_);
     return kinematics_status;
 }
