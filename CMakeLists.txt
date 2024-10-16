@@ -19,6 +19,23 @@ find_library(KDL liborocos-kdl.so.1.5.1 NAMES liborocos-kdl liborocos kdl HINTS 
 
 message(${FORTRUN})
 
+set(SNS ${CMAKE_CURRENT_SOURCE_DIR}/lib/sns)
+set(SNS_LIB
+    ${SNS}/fosns_velocity_ik.cpp            ${SNS}/fosns_velocity_ik.hpp
+    ${SNS}/fsns_velocity_ik.cpp             ${SNS}/fsns_velocity_ik.hpp
+    ${SNS}/osns_sm_velocity_ik.cpp          ${SNS}/osns_sm_velocity_ik.hpp
+    ${SNS}/osns_velocity_ik.cpp             ${SNS}/osns_velocity_ik.hpp
+    ${SNS}/sns_acc_ik_base.cpp              ${SNS}/sns_acc_ik_base.hpp
+    ${SNS}/sns_ik_base.cpp                  ${SNS}/sns_ik_base.hpp
+    ${SNS}/sns_ik_math_utils.cpp            ${SNS}/sns_ik_math_utils.hpp
+    ${SNS}/sns_ik.cpp                       ${SNS}/sns_ik.hpp
+    ${SNS}/sns_linear_solver.cpp            ${SNS}/sns_linear_solver.hpp
+    ${SNS}/sns_position_ik.cpp              ${SNS}/sns_position_ik.hpp
+    ${SNS}/sns_vel_ik_base_interface.cpp    ${SNS}/sns_vel_ik_base_interface.hpp
+    ${SNS}/sns_vel_ik_base.cpp              ${SNS}/sns_vel_ik_base.hpp
+    ${SNS}/sns_velocity_ik.cpp              ${SNS}/sns_velocity_ik.hpp
+)
+
 set(MAIN_KINEMATIC ${CMAKE_CURRENT_SOURCE_DIR}/facade)
 set(KINEMATIC_CLASS ${CMAKE_CURRENT_SOURCE_DIR}/kinematic_class)
 set(KDL_KINEMATIC_CLASS ${KINEMATIC_CLASS}/KDL)
@@ -26,6 +43,8 @@ set(KDL_KINEMATIC_CLASS ${KINEMATIC_CLASS}/KDL)
 set(USABLE_FUNCTIONS ${CMAKE_CURRENT_SOURCE_DIR}/usable_functions)
 
 add_executable(${PROJECT}
+    ${SNS_LIB}
+
     main.cpp
 
     ${MAIN_KINEMATIC}/main_kinematic.cpp        ${MAIN_KINEMATIC}/main_kinematic.hpp
