@@ -16,9 +16,11 @@
 
 #include "sns_ik.hpp"
 #include <iostream>
+#include <cstdio>
 // #include <ros/ros.h>
 // #include <kdl_parser/kdl_parser.hpp>
 // #include <urdf/model.h>
+
 #include "sns_velocity_ik.hpp"
 #include "sns_vel_ik_base_interface.hpp"
 #include "osns_velocity_ik.hpp"
@@ -47,107 +49,107 @@ namespace sns_ik {
    }
   }
 
-  // SNS_IK::SNS_IK(const std::string& base_link, const std::string& tip_link,
-  //                const std::string& URDF_param, double loopPeriod, double eps,
-  //                sns_ik::VelocitySolveType type) :
-  //   m_initialized(false),
-  //   m_eps(eps),
-  //   m_loopPeriod(loopPeriod),
-  //   m_nullspaceGain(1.0),
-  //   m_solvetype(type)
-  // {
-  //   ros::NodeHandle node_handle("~");
-  //   urdf::Model robot_model;
-  //   std::string xml_string;
-  //   std::string urdf_xml, full_urdf_xml;
-  //   node_handle.param("urdf_param",urdf_xml,URDF_param);
-  //   node_handle.searchParam(urdf_xml,full_urdf_xml);
+/*   SNS_IK::SNS_IK(const std::string& base_link, const std::string& tip_link,
+                 const std::string& URDF_param, double loopPeriod, double eps,
+                 sns_ik::VelocitySolveType type) :
+    m_initialized(false),
+    m_eps(eps),
+    m_loopPeriod(loopPeriod),
+    m_nullspaceGain(1.0),
+    m_solvetype(type)
+  {
+    // ros::NodeHandle node_handle("~");
+    // urdf::Model robot_model;
+    // std::string xml_string;
+    // std::string urdf_xml, full_urdf_xml;
+    // node_handle.param("urdf_param",urdf_xml,URDF_param);
+    // node_handle.searchParam(urdf_xml,full_urdf_xml);
 
-  //   // ROS_DEBUG_NAMED("sns_ik","Reading xml file from parameter server");
-  //   if (!node_handle.getParam(full_urdf_xml, xml_string)) {
-  //     // ROS_FATAL_NAMED("sns_ik","Could not load the xml from parameter server: %s", urdf_xml.c_str());
-  //     return;
-  //   }
+    // ROS_DEBUG_NAMED("sns_ik","Reading xml file from parameter server");
+    // if (!node_handle.getParam(full_urdf_xml, xml_string)) {
+    //   // ROS_FATAL_NAMED("sns_ik","Could not load the xml from parameter server: %s", urdf_xml.c_str());
+    //   return;
+    // }
 
-  //   node_handle.param(full_urdf_xml, xml_string, std::string());
-  //   robot_model.initString(xml_string);
+    // node_handle.param(full_urdf_xml, xml_string, std::string());
+    // robot_model.initString(xml_string);
 
-  //   // ROS_DEBUG_STREAM_NAMED("sns_ik","Reading joints and links from URDF");
-  //   KDL::Tree tree;
-  //   if (!kdl_parser::treeFromUrdfModel(robot_model, tree)) {
-  //     // ROS_FATAL("Failed to extract kdl tree from xml robot description.");
-  //     return;
-  //   }
+    // ROS_DEBUG_STREAM_NAMED("sns_ik","Reading joints and links from URDF");
+    // KDL::Tree tree;
+    // if (!kdl_parser::treeFromUrdfModel(robot_model, tree)) {
+    //   // ROS_FATAL("Failed to extract kdl tree from xml robot description.");
+    //   return;
+    // }
 
-  //   if(!tree.getChain(base_link, tip_link, m_chain)) {
-  //     // ROS_FATAL("Couldn't find chain %s to %s",base_link.c_str(),tip_link.c_str());
-  //   }
+    // if(!tree.getChain(base_link, tip_link, m_chain)) {
+    //   // ROS_FATAL("Couldn't find chain %s to %s",base_link.c_str(),tip_link.c_str());
+    // }
 
-  //   std::vector<KDL::Segment> chain_segments = m_chain.segments;
-  //   m_lower_bounds.resize(m_chain.getNrOfJoints());
-  //   m_upper_bounds.resize(m_chain.getNrOfJoints());
-  //   m_velocity.resize(m_chain.getNrOfJoints());
-  //   m_acceleration.resize(m_chain.getNrOfJoints());
-  //   m_jointNames.resize(m_chain.getNrOfJoints());
+    std::vector<KDL::Segment> chain_segments = m_chain.segments;
+    m_lower_bounds.resize(m_chain.getNrOfJoints());
+    m_upper_bounds.resize(m_chain.getNrOfJoints());
+    m_velocity.resize(m_chain.getNrOfJoints());
+    m_acceleration.resize(m_chain.getNrOfJoints());
+    m_jointNames.resize(m_chain.getNrOfJoints());
 
-  //   unsigned int joint_num=0;
-  //   for(std::size_t i = 0; i < chain_segments.size(); ++i) {
-  //     // auto joint is of type shared_ptr<const urdf::Joint>
-  //     // prior to ROS Melodic, this is a boost::shared_ptr
-  //     // ROS Melodic and later, this is a std::shared_ptr
-  //     auto joint = robot_model.getJoint(chain_segments[i].getJoint().getName());
-  //     if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
-  //       double lower=0; //TODO Better default values? Error if these arent found?
-  //       double upper=0;
-  //       double velocity=0;
-  //       double acceleration=0;
+    unsigned int joint_num=0;
+    for(std::size_t i = 0; i < chain_segments.size(); ++i) {
+      // auto joint is of type shared_ptr<const urdf::Joint>
+      // prior to ROS Melodic, this is a boost::shared_ptr
+      // ROS Melodic and later, this is a std::shared_ptr
+      auto joint = robot_model.getJoint(chain_segments[i].getJoint().getName());
+      if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
+        double lower=0; //TODO Better default values? Error if these arent found?
+        double upper=0;
+        double velocity=0;
+        double acceleration=0;
 
-  //       if ( joint->type == urdf::Joint::CONTINUOUS ) {
-  //           lower=std::numeric_limits<float>::lowest();
-  //           upper=std::numeric_limits<float>::max();
-  //       } else {
-  //         if(joint->safety) {
-  //           lower = std::max(joint->limits->lower, joint->safety->soft_lower_limit);
-  //           upper = std::min(joint->limits->upper, joint->safety->soft_upper_limit);
-  //         } else {
-  //           lower = joint->limits->lower;
-  //           upper = joint->limits->upper;
-  //         }
-  //         velocity = std::fabs(joint->limits->velocity);
-  //       }
-  //       // Checking the Param server for limit modifications
-  //       // and acceleration limits
-  //       std::string prefix = urdf_xml + "_planning/joint_limits/" + joint->name + "/";
-  //       double ul;
-  //       if(node_handle.getParam(prefix + "max_position", ul)){
-  //         upper = std::min(upper, ul);
-  //       }
-  //       double ll;
-  //       if(node_handle.getParam(prefix + "min_position", ll)){
-  //         lower = std::max(lower, ll);
-  //       }
-  //       double vel;
-  //       if(node_handle.getParam(prefix + "max_velocity", vel)){
-  //         if (velocity > 0)
-  //           velocity = std::min(velocity, std::fabs(vel));
-  //         else
-  //           velocity = std::fabs(vel);
-  //       }
-  //       node_handle.getParam(prefix + "max_acceleration", acceleration);
+        if ( joint->type == urdf::Joint::CONTINUOUS ) {
+            lower=std::numeric_limits<float>::lowest();
+            upper=std::numeric_limits<float>::max();
+        } else {
+          if(joint->safety) {
+            lower = std::max(joint->limits->lower, joint->safety->soft_lower_limit);
+            upper = std::min(joint->limits->upper, joint->safety->soft_upper_limit);
+          } else {
+            lower = joint->limits->lower;
+            upper = joint->limits->upper;
+          }
+          velocity = std::fabs(joint->limits->velocity);
+        }
+        // Checking the Param server for limit modifications
+        // and acceleration limits
+        std::string prefix = urdf_xml + "_planning/joint_limits/" + joint->name + "/";
+        double ul;
+        if(node_handle.getParam(prefix + "max_position", ul)){
+          upper = std::min(upper, ul);
+        }
+        double ll;
+        if(node_handle.getParam(prefix + "min_position", ll)){
+          lower = std::max(lower, ll);
+        }
+        double vel;
+        if(node_handle.getParam(prefix + "max_velocity", vel)){
+          if (velocity > 0)
+            velocity = std::min(velocity, std::fabs(vel));
+          else
+            velocity = std::fabs(vel);
+        }
+        node_handle.getParam(prefix + "max_acceleration", acceleration);
 
-  //       m_lower_bounds(joint_num)=lower;
-  //       m_upper_bounds(joint_num)=upper;
-  //       m_velocity(joint_num) = velocity;
-  //       m_acceleration(joint_num) = std::fabs(acceleration);
-  //       m_jointNames[joint_num] = joint->name;
+        m_lower_bounds(joint_num)=lower;
+        m_upper_bounds(joint_num)=upper;
+        m_velocity(joint_num) = velocity;
+        m_acceleration(joint_num) = std::fabs(acceleration);
+        m_jointNames[joint_num] = joint->name;
 
-  //       // ROS_INFO("sns_ik: Using joint %s lb: %.3f, ub: %.3f, v: %.3f, a: %.3f", joint->name.c_str(),
-  //               //  m_lower_bounds(joint_num), m_upper_bounds(joint_num), m_velocity(joint_num), m_acceleration(joint_num));
-  //       joint_num++;
-  //     }
-  //   }
-  //   initialize();
-  // }
+        // ROS_INFO("sns_ik: Using joint %s lb: %.3f, ub: %.3f, v: %.3f, a: %.3f", joint->name.c_str(),
+                //  m_lower_bounds(joint_num), m_upper_bounds(joint_num), m_velocity(joint_num), m_acceleration(joint_num));
+        joint_num++;
+      }
+    }
+    initialize();
+  } */
 
 
   SNS_IK::SNS_IK(const KDL::Chain& chain, const KDL::JntArray& q_min,
@@ -166,21 +168,11 @@ namespace sns_ik {
     m_acceleration(a_max),
     m_jointNames(jointNames)
   {
-    initialize();
+    // std::cout << std::endl << m_chain.getNrOfJoints() << std::endl;
+    initialize(type);
   }
 
-  void SNS_IK::initialize() {
-
-    // ROS_ASSERT_MSG(m_chain.getNrOfJoints() == m_lower_bounds.rows(),
-    //             "SNS_IK: Number of joint lower bounds does not equal number of joints");
-    // ROS_ASSERT_MSG(m_chain.getNrOfJoints() == m_upper_bounds.rows(),
-    //             "SNS_IK: Number of joint upper bounds does not equal number of joints");
-    // ROS_ASSERT_MSG(m_chain.getNrOfJoints() == m_velocity.rows(),
-    //             "SNS_IK: Number of max joint velocity bounds does not equal number of joints");
-    // ROS_ASSERT_MSG(m_chain.getNrOfJoints() == m_acceleration.rows(),
-    //             "SNS_IK: Number of max joint acceleration bounds does not equal number of joints");
-    // ROS_ASSERT_MSG(m_chain.getNrOfJoints() == m_jointNames.size(),
-    //                 "SNS_IK: Number of joint names does not equal number of joints");
+  void SNS_IK::initialize(sns_ik::VelocitySolveType type) {
 
     // Populate a vector cooresponding to the type for every joint
     for (std::size_t i = 0; i < m_chain.segments.size(); i++) {
@@ -196,12 +188,10 @@ namespace sns_ik {
         m_types.push_back(SNS_IK::JointType::Prismatic);
       }
     }
-    // ROS_ASSERT_MSG(m_types.size()==(unsigned int)m_lower_bounds.data.size(),
-                  //  "SNS_IK: Could not determine joint limits for all non-continuous joints");
 
     m_jacobianSolver = std::shared_ptr<KDL::ChainJntToJacSolver>(new KDL::ChainJntToJacSolver(m_chain));
-    // ROS_ASSERT_MSG(setVelocitySolveType(m_solvetype),
-                  //  "SNS_IK: Failed to create a new SNS velocity and position solver."); //TODO make loop rate configurable
+    this->setVelocitySolveType(type);
+    m_initialized = true;
   }
 
 bool SNS_IK::setVelocitySolveType(VelocitySolveType type) {
@@ -210,49 +200,52 @@ bool SNS_IK::setVelocitySolveType(VelocitySolveType type) {
     switch (type) {
       case sns_ik::SNS_OptimalScaleMargin:
         m_ik_vel_solver = std::shared_ptr<OSNS_sm_VelocityIK>(new OSNS_sm_VelocityIK(m_chain.getNrOfJoints(), m_loopPeriod));
-        // ROS_INFO("SNS_IK: Set Velocity solver to SNS Optimal Scale Margin solver.");
+        printf("SNS_IK: Set Velocity solver to SNS Optimal Scale Margin solver.");
         break;
       case sns_ik::SNS_Optimal:
         m_ik_vel_solver = std::shared_ptr<OSNSVelocityIK>(new OSNSVelocityIK(m_chain.getNrOfJoints(), m_loopPeriod));
-        // ROS_INFO("SNS_IK: Set Velocity solver to SNS Optimal solver.");
+        printf("SNS_IK: Set Velocity solver to SNS Optimal solver.");
         break;
       case sns_ik::SNS_Fast:
         m_ik_vel_solver = std::shared_ptr<FSNSVelocityIK>(new FSNSVelocityIK(m_chain.getNrOfJoints(), m_loopPeriod));
-        // ROS_INFO("SNS_IK: Set Velocity solver to Fast SNS solver.");
+        printf("SNS_IK: Set Velocity solver to Fast SNS solver.");
         break;
       case sns_ik::SNS_FastOptimal:
         m_ik_vel_solver = std::shared_ptr<FOSNSVelocityIK>(new FOSNSVelocityIK(m_chain.getNrOfJoints(), m_loopPeriod));
-        // ROS_INFO("SNS_IK: Set Velocity solver to Fast Optimal SNS solver.");
+        printf("SNS_IK: Set Velocity solver to Fast Optimal SNS solver.");
         break;
       case sns_ik::SNS:
         m_ik_vel_solver = std::shared_ptr<SNSVelocityIK>(new SNSVelocityIK(m_chain.getNrOfJoints(), m_loopPeriod));
-        // ROS_INFO("SNS_IK: Set Velocity solver to Standard SNS solver.");
+        printf("SNS_IK: Set Velocity solver to Standard SNS solver.");
         break;
       case sns_ik::SNS_Base:
         m_ik_vel_solver = std::shared_ptr<SNSVelIKBaseInterface>(new SNSVelIKBaseInterface(m_chain.getNrOfJoints(), m_loopPeriod));
-        // ROS_INFO("SNS_IK: Set Velocity solver to Base SNS solver.");
+        printf("SNS_IK: Set Velocity solver to Base SNS solver.");
         break;
       default:
-        // ROS_ERROR("SNS_IK: Unknown Velocity solver type requested.");
+        printf("SNS_IK: Unknown Velocity solver type requested.");
         return false;
     }
     m_ik_vel_solver->setJointsCapabilities(m_lower_bounds.data, m_upper_bounds.data,
                                            m_velocity.data, m_acceleration.data);
+    // std::cout << m_chain.getNrOfJoints();
     m_ik_pos_solver = std::shared_ptr<SNSPositionIK>(new SNSPositionIK(m_chain, m_ik_vel_solver, m_eps));
+    // printf("SNSPositionIK created?");
     m_solvetype = type;
     m_initialized = true;
     return true;
  }
- return false;
+  return false;
 }
 
 int SNS_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in,
                       const KDL::JntArray& q_bias,
                       const std::vector<std::string>& biasNames,
-                      KDL::JntArray &q_out, const KDL::Twist& bounds) {
+                      KDL::JntArray &q_out, const KDL::Twist& bounds) 
+{
 
   if (!m_initialized) {
-    // ROS_ERROR("SNS_IK was not properly initialized with a valid chain or limits.");
+    printf("SNS_IK was not properly initialized with a valid chain or limits FIRST.");
     return -1;
   }
 
@@ -263,13 +256,15 @@ int SNS_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in,
     Eigen::MatrixXd ns_jacobian;
     std::vector<int> indicies;
     if (!nullspaceBiasTask(q_bias, biasNames, &ns_jacobian, &indicies)) {
-      // ROS_ERROR("Could not create nullspace bias task");
+      printf("Could not create nullspace bias task");
       result = -1;
     } else {
+      printf("NullSpaceTrue");
       result = m_ik_pos_solver->CartToJnt(q_init, p_in, q_bias, ns_jacobian, indicies,
                                           m_nullspaceGain, &q_out, bounds);
     }
   } else {
+    printf("QBiasFalse");
     result = m_ik_pos_solver->CartToJnt(q_init, p_in, &q_out, bounds);
   }
   m_ik_vel_solver->usePositionLimits(true);
@@ -283,7 +278,7 @@ int SNS_IK::CartToJntVel(const KDL::JntArray& q_in, const KDL::Twist& v_in,
                          KDL::JntArray& qdot_out)
 {
   if (!m_initialized) {
-    // ROS_ERROR("SNS_IK was not properly initialized with a valid chain or limits.");
+    printf("SNS_IK was not properly initialized with a valid chain or limits.");
     return -1;
   }
 
@@ -311,7 +306,7 @@ int SNS_IK::CartToJntVel(const KDL::JntArray& q_in, const KDL::Twist& v_in,
     Task task2;
     std::vector<int> indicies;
     if (!nullspaceBiasTask(q_bias, biasNames, &(task2.jacobian), &indicies)) {
-      // ROS_ERROR("Could not create nullspace bias task");
+      printf("Could not create nullspace bias task");
       return -1;
     }
     task2.desired = Eigen::VectorXd::Zero(q_bias.rows());

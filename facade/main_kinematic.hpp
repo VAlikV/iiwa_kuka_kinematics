@@ -4,6 +4,7 @@
 #include <Eigen/Eigen>
 #include "../kinematic_class/base_kinematic.hpp"
 #include "../kinematic_class/KDL/KDL_kinematic.hpp"
+#include "../kinematic_class/SNS/SNS_kinematic.hpp"
 
 using namespace iiwa_kinematics;
 

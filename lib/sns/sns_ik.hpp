@@ -48,10 +48,10 @@ namespace sns_ik {
   class SNS_IK
   {
   public:
-    SNS_IK(const std::string& base_link, const std::string& tip_link,
+  /*   SNS_IK(const std::string& base_link, const std::string& tip_link,
            const std::string& URDF_param="/robot_description",
            double loopPeriod=0.01, double eps=1e-5,
-           sns_ik::VelocitySolveType type=sns_ik::SNS);
+           sns_ik::VelocitySolveType type=sns_ik::SNS); */
 
     SNS_IK(const KDL::Chain& chain,
            const KDL::JntArray& q_min, const KDL::JntArray& q_max,
@@ -174,7 +174,7 @@ namespace sns_ik {
     std::shared_ptr<SNSPositionIK> m_ik_pos_solver;
     std::shared_ptr<KDL::ChainJntToJacSolver> m_jacobianSolver;
 
-    void initialize();
+    void initialize(sns_ik::VelocitySolveType type);
 
     bool nullspaceBiasTask(const KDL::JntArray& q_bias,
                            const std::vector<std::string>& biasNames,

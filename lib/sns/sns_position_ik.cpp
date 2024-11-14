@@ -28,8 +28,8 @@ namespace sns_ik {
 SNSPositionIK::SNSPositionIK(KDL::Chain chain, std::shared_ptr<SNSVelocityIK> velocity_ik, double eps) :
     m_chain(chain),
     m_ikVelSolver(velocity_ik),
-    m_positionFK(chain),
-    m_jacobianSolver(chain),
+    m_positionFK(m_chain),
+    m_jacobianSolver(m_chain),
     m_linearMaxStepSize(0.2),
     m_angularMaxStepSize(0.2),
     m_maxIterations(150),
@@ -39,6 +39,9 @@ SNSPositionIK::SNSPositionIK(KDL::Chain chain, std::shared_ptr<SNSVelocityIK> ve
     m_barrierInitAlpha(0.1),
     m_barrierDecay(0.8)
 {
+  // int st = m_chain.getNrOfJoints();
+  // int st1 = chain.getNrOfJoints();
+  // std::cout << std::endl << st << " " << st1;
 }
 
 SNSPositionIK::~SNSPositionIK()
@@ -53,9 +56,13 @@ bool SNSPositionIK::calcPoseError(const KDL::JntArray& q,
                                   KDL::Vector* trans,
                                   KDL::Vector* rotAxis)
 {
+  // int st = m_positionFK.JntToCart(q, *pose);
+  // int st = q.rows();
+  // int st1 = m_chain.getNrOfJoints();
+  // std::cout << std::endl << st << " " << st1 << "     " << std::setprecision(4) << "Q_ik: " << (double)q(0)*180/M_PI << " " << (double)q(1)*180/M_PI << " " << (double)q(2)*180/M_PI << " " << (double)q(3)*180/M_PI << " " << (double)q(4)*180/M_PI << " " << (double)q(5)*180/M_PI << " " << (double)q(6)*180/M_PI << std::endl;
   if (m_positionFK.JntToCart(q, *pose) < 0)
   {
-    // ROS_ERROR("JntToCart failed");
+    printf("\nJntToCart failed\n");
     return false;
   }
 
@@ -64,6 +71,11 @@ bool SNSPositionIK::calcPoseError(const KDL::JntArray& q,
   *errL = trans->Normalize();
   KDL::Rotation rot = goal.M * pose->M.Inverse();
   *errR = rot.GetRotAngle(*rotAxis);  // returns [0 ... pi]
+
+  std::cout << std::setprecision(4) << "Положение: " << std::endl << rotAxis->data[0]<< " " << rotAxis->data[1]<< " " << rotAxis->data[2]<< std::endl;
+  std::cout << std::setprecision(4) << "Матрица: " << std::endl << rot << std::endl; 
+    
+  
   return true;
 }
 
@@ -112,10 +124,12 @@ int SNSPositionIK::CartToJnt(const KDL::JntArray& joint_seed,
   for (ii = 0; ii < m_maxIterations; ++ii) {
 
     if (!calcPoseError(q_i, goal_pose, &pose_i, &lineErr, &rotErr, &trans, &rotAxis)) {
-      // ROS_ERROR("Failed to calculate pose error!");
+      printf("\nFailed to calculate pose error!\n");
       return -1;
     }
-
+    // std::cout << std::setprecision(4) << "Положение: " << std::endl << (double)goal_pose.p(0)*100 << " " << (double)goal_pose.p(1)*100 << " " << (double)goal_pose.p(2)*100 << std::endl;
+    // std::cout << std::setprecision(4) << "Матрица: " << std::endl << goal_pose.M << std::endl;
+    std::cout << std::endl << std::setprecision(4) << "Q_ik: " << (double)q_i(0)*180/M_PI << " " << (double)q_i(1)*180/M_PI << " " << (double)q_i(2)*180/M_PI << " " << (double)q_i(3)*180/M_PI << " " << (double)q_i(4)*180/M_PI << " " << (double)q_i(5)*180/M_PI << " " << (double)q_i(6)*180/M_PI << std::endl;
     // Check stopping tolerances
     delta_twist = diffRelative(goal_pose, pose_i);
 
@@ -157,7 +171,7 @@ int SNSPositionIK::CartToJnt(const KDL::JntArray& joint_seed,
 
     if (m_jacobianSolver.JntToJac(q_i, jacobian) < 0)
     {
-      // ROS_ERROR("JntToJac failed");
+      printf("\nJntToJac failed\n");
       return -1;
     }
     sot[0].jacobian = jacobian.data;
@@ -209,6 +223,7 @@ int SNSPositionIK::CartToJnt(const KDL::JntArray& joint_seed,
     // ROS_DEBUG("Solution Found in %d iterations!", ii);
     return 1;  // TODO: return success/fail code
   } else {
+    printf("\nSolution not found\n");
     return -1;
   }
 }

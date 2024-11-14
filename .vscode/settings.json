@@ -64,6 +64,9 @@
         "list": "cpp",
         "dense": "cpp",
         "strstream": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "forward_list": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     }
 }

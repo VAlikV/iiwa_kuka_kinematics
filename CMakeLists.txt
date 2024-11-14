@@ -13,7 +13,7 @@ find_library(OpenBLAS_LIB libopenblas NAMES libopenblas openblas HINTS ${CMAKE_C
 find_library(Lapack_LIB liblapack NAMES liblapack lapack HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
 find_library(Armadillo_LIB libarmadillo NAMES libarmadillo armadillo HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
 find_library(FORTRUN libgfortran.so.5 NAMES libgfortran5 gfortran gfortran5  gfortran REQUIRED)
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_library(FORTRUN libgfortran.so.5 NAMES libgfortran5 gfortran gfortran5 gfortran REQUIRED)
 find_library(KDL liborocos-kdl.so.1.5.1 NAMES liborocos-kdl liborocos kdl HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
 
@@ -39,6 +39,7 @@ set(SNS_LIB
 set(MAIN_KINEMATIC ${CMAKE_CURRENT_SOURCE_DIR}/facade)
 set(KINEMATIC_CLASS ${CMAKE_CURRENT_SOURCE_DIR}/kinematic_class)
 set(KDL_KINEMATIC_CLASS ${KINEMATIC_CLASS}/KDL)
+set(SNS_KINEMATIC_CLASS ${KINEMATIC_CLASS}/SNS)
 
 set(USABLE_FUNCTIONS ${CMAKE_CURRENT_SOURCE_DIR}/usable_functions)
 
@@ -51,6 +52,7 @@ add_executable(${PROJECT}
 
     ${KINEMATIC_CLASS}/base_kinematic.hpp       ${KINEMATIC_CLASS}/base_kinematic.cpp
     ${KDL_KINEMATIC_CLASS}/KDL_kinematic.hpp    ${KDL_KINEMATIC_CLASS}/KDL_kinematic.cpp
+    ${SNS_KINEMATIC_CLASS}/SNS_kinematic.hpp    ${SNS_KINEMATIC_CLASS}/SNS_kinematic.cpp
     
     # ${USABLE_FUNCTIONS}/usable_functions.hpp    ${USABLE_FUNCTIONS}/usable_functions.cpp
 )

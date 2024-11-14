@@ -8,9 +8,25 @@
 namespace iiwa_kinematics
 {
     const int N_JOINTS = 7;
+
     const double LIMITS_MAX[N_JOINTS] = {168, 118, 168, 118, 168, 118, 173};
     const double LIMITS_MIN[N_JOINTS] = {-168, -118, -168, -118, -168, -118, -173};
+
+    const double LIMITS_VELOCITY[N_JOINTS] = {10, 10, 10, 10, 10, 10, 10};
+    const double LIMITS_ACCELERATION[N_JOINTS] = {100, 100, 100, 100, 100, 100, 100};
+
     const double LINKS[N_JOINTS] = {0.34, 0, 0.4, 0, 0.4, 0, 0.126};
+
+    const double LINKS_MASS[N_JOINTS] = {/*5,*/ 4, 4, 3, 2.7, 1.7, 1.8, 0.3};
+    const double LINKS_INERTIA[N_JOINTS][3] = {/*{0.05, 0.06, 0.03},*/
+                                                {0.1, 0.09, 0.02},
+                                                {0.05, 0.018, 0.044},
+                                                {0.08, 0.075, 0.01},
+                                                {0.03, 0.01, 0.029},
+                                                {0.02, 0.018, 0.005},
+                                                {0.005, 0.0036, 0.0047},
+                                                {0.001, 0.001, 0.001}};
+ 
     const int MAX_ITER = 100;
     const double EPS = 1e-2;
 
@@ -22,6 +38,9 @@ namespace iiwa_kinematics
 
         virtual void setQ(const Eigen::Array<double,N_JOINTS,1> &thetta) = 0;
         virtual Eigen::Array<double,N_JOINTS,1> getQ() = 0;
+
+        virtual void setNullBias(const Eigen::Array<double,N_JOINTS,1> &thetta) = 0;
+        virtual Eigen::Array<double,N_JOINTS,1> getNullBias() = 0;
 
         virtual void setRotationMatrix(const Eigen::Matrix<double,3,3> &rotation) = 0;
         virtual Eigen::Matrix<double,3,3> getRotationMatrix() = 0;
