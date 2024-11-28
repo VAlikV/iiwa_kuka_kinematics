@@ -20,8 +20,8 @@ KDLKinematic::KDLKinematic()
         thetta_max_(i) = LIMITS_MAX[i]*M_PI/180;
         thetta_min_(i) = LIMITS_MIN[i]*M_PI/180;
 
-        thetta_previous_(i) = 0.1785;
-        thetta_(i) = 0.1785;
+        thetta_previous_(i) = INIT[i];
+        thetta_(i) = INIT[i];
         // thetta_previous_(i) = 0.785;
         // thetta_(i) = 0.785;
         // thetta_previous_(i) = 1.57;
@@ -69,16 +69,29 @@ Eigen::Array<double,N_JOINTS,1> KDLKinematic::getQ()
 
 // -----------------------
 
-void KDLKinematic::setPositionVector(const Eigen::Array<double,3,1> &position)
+void KDLKinematic::setNullBias(const Eigen::Array<double,N_JOINTS,1> &thetta)
+{
+
+}
+
+Eigen::Array<double,N_JOINTS,1> KDLKinematic::getNullBias()
+{
+    Eigen::Array<double,N_JOINTS,1> nulb;
+    return nulb;
+}
+
+// -----------------------
+
+void KDLKinematic::setPositionVector(const Eigen::Vector3d &position)
 {
     endefector_.p.x(position(0));
     endefector_.p.y(position(1));
     endefector_.p.z(position(2));
 }
 
-Eigen::Array<double,3,1> KDLKinematic::getPositionVector()
+Eigen::Vector3d KDLKinematic::getPositionVector()
 {
-    Eigen::Array<double,3,1> pos;
+    Eigen::Vector3d pos;
     pos << endefector_.p.x(), endefector_.p.y(), endefector_.p.z();
     return pos;
 }

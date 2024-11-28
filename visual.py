@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+a = np.array([-11.26, 8.749, 12.28, 112.3, 168, -8.938, 80.49])
+print(a*np.pi/180)
+
 # f = open("joints.txt", "r")
-data = np.genfromtxt("build/joints.txt", delimiter="\t", dtype=float).T
-data1 = np.genfromtxt("build/joints1.txt", delimiter="\t", dtype=float).T
+data = np.genfromtxt("joints.txt", delimiter="\t", dtype=float).T
+data1 = np.genfromtxt("joints1.txt", delimiter="\t", dtype=float).T
 
 data = np.insert(data,0,[0,0,0],axis=1)
 data1 = np.insert(data1,0,[0,0,0],axis=1)
