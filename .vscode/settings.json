@@ -67,6 +67,12 @@
         "cfenv": "cpp",
         "forward_list": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "unordered_set": "cpp",
+        "ranges": "cpp",
+        "stop_token": "cpp",
+        "valarray": "cpp"
     }
 }
