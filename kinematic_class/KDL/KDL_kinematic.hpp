@@ -21,12 +21,24 @@ using namespace iiwa_kinematics;
 class KDLKinematic: public BaseKinematic
 {
 private: 
+
+    // --------------------------------------------- Для инициализации
+
     KDL::Chain chain_;                              // Цепочка манипулятора
 
     KDL::ChainFkSolverPos_recursive* fksolver_;      // Решатель прямой задачи кинематики
 
+    KDL::ChainIkSolverVel_pinv* vsolver_;            // Решатель дифференциальной задачи кинематики
+    // KDL::ChainIkSolverVel_pinv_givens* vsolver_;            // Решатель дифференциальной задачи кинематики
+    // KDL::ChainIkSolverVel_pinv_nso* vsolver_;
+    
+    KDL::ChainIkSolverPos_NR_JL* iksolver_;          // Решатель обратной задачи кинематики
+    // KDL::ChainIkSolverPos_NR_JL* iksolver_;
+
     KDL::JntArray thetta_max_;                      // Максимальные углы в джоинтах
     KDL::JntArray thetta_min_;                      // Минимальные углы в джоинтах
+
+    // --------------------------------------------- Расчеты
 
     KDL::JntArray thetta_previous_;                 // Значения углов на предыдущем шаге
     KDL::JntArray thetta_;                          // Текущие значения углов
@@ -35,13 +47,6 @@ private:
 
     KDL::Frame endefector_previous_;                // Положение эндефектора на предыдущем шаге
     KDL::Frame endefector_;                         // Положение эндефектора
-
-    KDL::ChainIkSolverVel_pinv* vsolver_;            // Решатель дифференциальной задачи кинематики
-    // KDL::ChainIkSolverVel_pinv_givens* vsolver_;            // Решатель дифференциальной задачи кинематики
-    // KDL::ChainIkSolverVel_pinv_nso* vsolver_;
-    
-    KDL::ChainIkSolverPos_NR_JL* iksolver_;          // Решатель обратной задачи кинематики
-    // KDL::ChainIkSolverPos_NR_JL* iksolver_;
 
 public:
     KDLKinematic();

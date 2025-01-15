@@ -3,8 +3,15 @@
 
 #include <Eigen/Dense>
 
+#include "pinocchio/parsers/urdf.hpp"
+#include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/algorithm/kinematics.hpp"
+
 #include "../base_kinematic.hpp"
+
+#include <iostream>
 #include <vector>
+#include <string>
 
 using namespace iiwa_kinematics;
 
@@ -14,14 +21,25 @@ private:
 
     // --------------------------------------------- Для инициализации
 
-    
+    pinocchio::Model model_;
+    pinocchio::Data data_;
+
+    Eigen::Matrix<double, N_JOINTS, 1> thetta_max_;
+    Eigen::Matrix<double, N_JOINTS, 1> thetta_min_;
 
     // --------------------------------------------- Расчеты
 
+    Eigen::Matrix<double, N_JOINTS, 1> thetta_previous_;
+    Eigen::Matrix<double, N_JOINTS, 1> thetta_;
+
+    // Eigen::Matrix<double,N_JOINTS,3> joint_pose_;            // Вектор положения углов
+
+    pinocchio::SE3 endefector_previous_;                // Положение эндефектора на предыдущем шаге
+    pinocchio::SE3 endefector_;                         // Положение эндефектора
     
 
 public:
-    PinKinematic();
+    PinKinematic(std::string urdf_name);
     ~PinKinematic();
 
     void setQ(const Eigen::Array<double,N_JOINTS,1> &thetta) override;

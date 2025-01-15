@@ -1,8 +1,25 @@
 #include "Pinocchio_kinematic.hpp"
 
-PinKinematic::PinKinematic(sns_ik::VelocitySolveType type)
+PinKinematic::PinKinematic(std::string urdf_name)
 {
-    
+    pinocchio::urdf::buildModel(urdf_name, model_);
+    data_ = pinocchio::Data(model_);
+    for (int i = 0; i < N_JOINTS; ++i)
+    {
+        thetta_max_[i] = LIMITS_MAX[i]*M_PI/180;
+        thetta_min_[i] = LIMITS_MIN[i]*M_PI/180;
+
+        thetta_previous_[i] = INIT[i];
+        thetta_[i] = INIT[i];
+        // thetta_previous_(i) = 0.785;
+        // thetta_(i) = 0.785;
+        // thetta_previous_(i) = 1.57;
+        // thetta_ (i) = 1.57;
+        // thetta_previous_(i) = 0;
+        // thetta_(i) = 0;
+    }
+
+    this->FK();
 }
 
 PinKinematic::~PinKinematic()
@@ -14,12 +31,12 @@ PinKinematic::~PinKinematic()
 
 void PinKinematic::setQ(const Eigen::Array<double,N_JOINTS,1> &thetta)
 {
-    thetta_.data = thetta;
+    thetta_ = thetta.matrix();
 }
 
 Eigen::Array<double,N_JOINTS,1> PinKinematic::getQ()
 {
-    return thetta_.data;
+    return thetta_.array();
 }
 
 // -----------------------
@@ -39,35 +56,24 @@ Eigen::Array<double,N_JOINTS,1> PinKinematic::getNullBias()
 
 void PinKinematic::setPositionVector(const Eigen::Vector3d &position)
 {
-    endefector_.p.x(position(0));
-    endefector_.p.y(position(1));
-    endefector_.p.z(position(2));
+    endefector_.translation() = position;
 }
 
 Eigen::Vector3d PinKinematic::getPositionVector()
 {
-    Eigen::Vector3d pos;
-    pos << endefector_.p.x(), endefector_.p.y(), endefector_.p.z();
-    return pos;
+    return endefector_.translation();
 }
 
 // -----------------------
 
 void PinKinematic::setRotationMatrix(const Eigen::Matrix<double,3,3> &rotation)
 {
-    // KDL::Rotation rot = KDL::Rotation(rotation(0,0), rotation(0,1), rotation(0,2), 
-    //                 rotation(1,0), rotation(1,1), rotation(1,2), 
-    //                 rotation(2,0), rotation(2,1), rotation(2,2));
-    // endefector_.M = rot;
+    endefector_.rotation() = rotation;
 }
 
 Eigen::Matrix<double,3,3> PinKinematic::getRotationMatrix()
 {
-    // Eigen::Matrix<double,3,3> rot;
-    // rot << endefector_.M.data[0], endefector_.M.data[1], endefector_.M.data[2],
-    //         endefector_.M.data[3], endefector_.M.data[4], endefector_.M.data[5],
-    //         endefector_.M.data[6], endefector_.M.data[7], endefector_.M.data[8];
-    // return rot;
+    return endefector_.rotation();
 }
 
 // -----------------------
@@ -75,6 +81,11 @@ Eigen::Matrix<double,3,3> PinKinematic::getRotationMatrix()
 Eigen::Matrix<double,N_JOINTS,3> PinKinematic::getJointPose()
 {
     Eigen::Matrix<double,N_JOINTS,3> joint_pose;
+
+    for (int i = 0; i < N_JOINTS; ++i)
+    {
+        joint_pose.row(i) = data_.oMi[i+1].translation();
+    }
     
     return joint_pose;
 }
@@ -83,7 +94,10 @@ Eigen::Matrix<double,N_JOINTS,3> PinKinematic::getJointPose()
 
 int PinKinematic::FK()
 {
-    
+    thetta_previous_ = thetta_;
+    pinocchio::forwardKinematics(model_, data_, thetta_);
+    endefector_ = data_.oMi[7];
+    return 1;
 }
 
 // bool KDLKinematic::FK(const Eigen::Array<double,N_JOINTS,1> &thetta)
