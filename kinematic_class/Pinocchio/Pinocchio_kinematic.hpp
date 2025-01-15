@@ -6,6 +6,7 @@
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
 
 #include "../base_kinematic.hpp"
 
@@ -36,7 +37,21 @@ private:
 
     pinocchio::SE3 endefector_previous_;                // Положение эндефектора на предыдущем шаге
     pinocchio::SE3 endefector_;                         // Положение эндефектора
-    
+
+    // --------------------------------------------- Вспомогательное
+
+    const double eps_ = 1e-4;
+    const int IT_MAX_ = 1000;
+    const double DT_ = 1e-1;
+    const double damp_ = 1e-6;
+
+    pinocchio::Data::Matrix6x J_;
+    pinocchio::Data::Matrix6 Jlog_;
+    pinocchio::Data::Matrix6 JJt_;
+
+    bool success_ = false;
+    Eigen::Matrix<double, N_JOINTS, 1> err_;
+    Eigen::VectorXd v_;
 
 public:
     PinKinematic(std::string urdf_name);
