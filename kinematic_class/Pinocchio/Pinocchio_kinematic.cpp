@@ -21,10 +21,10 @@ PinKinematic::PinKinematic(std::string urdf_name)
 
     this->FK();
 
-    J_ = pinocchio::Data::Matrix6x(N_JOINTS, model_.nv);
+    J_ = pinocchio::Data::Matrix6x(6, model_.nv);
     J_.setZero();
 
-    v_ = Eigen::VectorXd(N_JOINTS);
+    v_ = Eigen::VectorXd(model_.nv);
 }
 
 PinKinematic::~PinKinematic()
@@ -123,6 +123,7 @@ int PinKinematic::IK()
         pinocchio::forwardKinematics(model_, data_, thetta_);
         const pinocchio::SE3 iMd = data_.oMi[N_JOINTS].actInv(oMdes);
         err_ = pinocchio::log6(iMd).toVector(); // in joint frame
+
         if (err_.norm() < eps_)
         {
             success_ = true;
@@ -133,6 +134,7 @@ int PinKinematic::IK()
             success_ = false;
             break;
         }
+
         pinocchio::computeJointJacobian(model_, data_, thetta_, N_JOINTS, J_); // J in joint frame
         pinocchio::Jlog6(iMd.inverse(), Jlog_);
 
@@ -156,6 +158,8 @@ int PinKinematic::IK()
         // std::cout << "\nWarning: the iterative algorithm has not reached convergence to the desired precision" << std::endl;
         return -1;
     }
+
+    // return 0;
 }
 
 // bool KDLKinematic::IK(const Eigen::Matrix<double,3,3> &rotation, const Eigen::Array<double,3,1> &position)

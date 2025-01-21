@@ -50,7 +50,7 @@ private:
     pinocchio::Data::Matrix6 JJt_;
 
     bool success_ = false;
-    Eigen::Matrix<double, N_JOINTS, 1> err_;
+    Eigen::Matrix<double, 6, 1> err_;
     Eigen::VectorXd v_;
 
 public:
