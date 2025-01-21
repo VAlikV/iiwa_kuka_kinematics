@@ -10,7 +10,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-find_library(KDL liborocos-kdl.so.1.5.1 NAMES liborocos-kdl liborocos kdl HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib REQUIRED)
+find_library(KDL liborocos-kdl.so.1.5.1 NAMES liborocos-kdl liborocos kdl REQUIRED)
 find_package(pinocchio REQUIRED)
 
 # message(${FORTRUN})
