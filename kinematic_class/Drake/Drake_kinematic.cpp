@@ -151,16 +151,14 @@ int DrakeKinematic::IK()
 
     const drake::solvers::MathematicalProgramResult result = drake::solvers::Solve(*prog, thetta_);
 
-    if (result.is_success()) {
-        thetta_ = result.GetSolution(ik_->q());
+    thetta_ = result.GetSolution(ik_->q());
+
+    if (result.is_success()) 
+    {
         return 1;
-
-    } else {
-        thetta_ = result.GetSolution(ik_->q());
-        return -1;
     }
-
-    return 0;
+    
+    return -1;
 }
 
 // bool KDLKinematic::IK(const Eigen::Matrix<double,3,3> &rotation, const Eigen::Array<double,3,1> &position)
