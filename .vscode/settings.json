@@ -73,6 +73,10 @@
         "unordered_set": "cpp",
         "ranges": "cpp",
         "stop_token": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp"
     }
 }

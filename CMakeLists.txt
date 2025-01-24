@@ -12,6 +12,8 @@ find_package(Threads REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_library(KDL liborocos-kdl.so.1.5.1 NAMES liborocos-kdl liborocos kdl REQUIRED)
 find_package(pinocchio REQUIRED)
+find_package(drake CONFIG REQUIRED)
+
 
 # message(${FORTRUN})
 
@@ -37,6 +39,7 @@ set(KINEMATIC_CLASS ${CMAKE_CURRENT_SOURCE_DIR}/kinematic_class)
 set(KDL_KINEMATIC_CLASS ${KINEMATIC_CLASS}/KDL)
 set(SNS_KINEMATIC_CLASS ${KINEMATIC_CLASS}/SNS)
 set(PIN_KINEMATIC_CLASS ${KINEMATIC_CLASS}/Pinocchio)
+set(DRAKE_KINEMATIC_CLASS ${KINEMATIC_CLASS}/Drake)
 
 set(USABLE_FUNCTIONS ${CMAKE_CURRENT_SOURCE_DIR}/usable_functions)
 
@@ -51,6 +54,7 @@ add_executable(${PROJECT}
     ${KDL_KINEMATIC_CLASS}/KDL_kinematic.hpp            ${KDL_KINEMATIC_CLASS}/KDL_kinematic.cpp
     ${SNS_KINEMATIC_CLASS}/SNS_kinematic.hpp            ${SNS_KINEMATIC_CLASS}/SNS_kinematic.cpp
     ${PIN_KINEMATIC_CLASS}/Pinocchio_kinematic.hpp      ${PIN_KINEMATIC_CLASS}/Pinocchio_kinematic.cpp
+    ${DRAKE_KINEMATIC_CLASS}/Drake_kinematic.hpp        ${DRAKE_KINEMATIC_CLASS}/Drake_kinematic.cpp
 
     # ${USABLE_FUNCTIONS}/usable_functions.hpp    ${USABLE_FUNCTIONS}/usable_functions.cpp
 )
@@ -60,8 +64,7 @@ target_link_libraries(${PROJECT}
     ${KDL}
     Threads::Threads
     pinocchio::pinocchio
+    drake::drake
 )
-
-target_include_directories(${PROJECT} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(for_tests)

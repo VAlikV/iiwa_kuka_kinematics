@@ -22,15 +22,26 @@ int main(int argc, char** argv)
 
     std::cout << "Hello, I'm kinematics solvers test!" << std::endl << std::endl;
 
-    std::cout << "Angles for tests: " << q.transpose() << std::endl; 
+    std::cout << "Angles for tests: " << q.transpose() << std::endl << std::endl; 
 
     // ---------------------------------------------------------- Инициализация KDL
 
-    std::cout << "1) KDL solver" << std::endl;
+    std::cout << "1) KDL solver" << std::endl << std::endl;
 
     KDLKinematic* KDL_solver = new KDLKinematic();
 
     Kinematic kinematic_KDL = Kinematic(KDL_solver);
+
+    kinematic_KDL.setQRad(q);
+    kinematic_KDL.FK();
+
+    position = kinematic_KDL.getPositionVector();
+    rotation = kinematic_KDL.getRotationMatrix();
+
+    std::cout << "Положение: " << position.transpose() << std::endl;
+    std::cout << "Матрица: " << rotation << std::endl << std::endl;
+
+    std::cout << "Angles for tests: " << q.transpose() << std::endl << std::endl; 
 
     // ---------------------------------------------------------- Инициализация SNS
 
@@ -42,11 +53,42 @@ int main(int argc, char** argv)
 
     // ---------------------------------------------------------- Инициализация Pinocchio
 
-    std::cout << "3) Pinocchio solver" << std::endl;
+    std::cout << "\n\n3) Pinocchio solver" << std::endl << std::endl;
 
     PinKinematic* Pin_solver = new PinKinematic("../robots/iiwa.urdf");
 
     Kinematic kinematic_Pin = Kinematic(Pin_solver);
+
+    kinematic_Pin.setQRad(q);
+    kinematic_Pin.FK();
+
+    position = kinematic_Pin.getPositionVector();
+    rotation = kinematic_Pin.getRotationMatrix();
+
+    std::cout << "Положение: " << position.transpose() << std::endl;
+    std::cout << "Матрица: " << rotation << std::endl << std::endl;
+
+    // ---------------------------------------------------------- Инициализация Drake
+
+    std::cout << "\n\n4) Drake solver" << std::endl << std::endl;
+
+    DrakeKinematic* Drake_solver = new DrakeKinematic("../robots/iiwa.urdf");
+
+    Kinematic kinematic_Drake = Kinematic(Drake_solver);
+
+    kinematic_Drake.setQRad(q);
+    kinematic_Drake.FK();
+
+    position = kinematic_Drake.getPositionVector();
+    rotation = kinematic_Drake.getRotationMatrix();
+
+    std::cout << "Положение: " << position.transpose() << std::endl;
+    std::cout << "Матрица: " << rotation << std::endl << std::endl;
+
+    // ---------------------------------------------------------- Задание углов
+
+    
+
 
    
 
