@@ -29,6 +29,10 @@ sudo make install
 
 ## 2. nlohman json
 
+```bash
+sudo apt-get -y install nlohmann-json3-dev
+```
+
 ## 3. KDL
 
 ```bash
