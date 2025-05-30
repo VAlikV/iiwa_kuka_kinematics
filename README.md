@@ -12,6 +12,9 @@ Ubuntu 22.04
 ```bash
 sudo apt install cmake libboost-dev libblas-dev liblapack-dev
 
+sudo apt-get -y install libeigen3-dev
+
+########
 wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
 
 gunzip eigen-3.4.0.tar.gz
